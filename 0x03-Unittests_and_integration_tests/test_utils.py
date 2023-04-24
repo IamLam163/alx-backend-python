@@ -65,6 +65,7 @@ class TestMemoize(unittest.TestCase):
 
             @memoize
             def a_property(self):
+                """return a_method"""
                 return self.a_method()
         with mock.patch.object(TestClass, "a_method", return_value=lambda: 42) as func:
             test_obj = TestClass()
