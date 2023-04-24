@@ -6,6 +6,8 @@ from typing import Any, Dict, Mapping, Sequence, Union
 import unittest
 from utils import access_nested_map, get_json, memoize
 from parameterized import parameterized
+import requests
+from unittest import mock
 
 
 class TestAccessNestedMap(unittest.TestCase):
@@ -27,7 +29,23 @@ class TestAccessNestedMap(unittest.TestCase):
         ({"a": 1}, ("a", "b"), KeyError),
     ])
     def test_access_nested_map_exception(self, nested_map: Mapping,
-                                         path: Sequence, result: Exception) -> Any:
+                                         path: Sequence, res: Exception) -> Any:
         """this method raises a Key Error"""
         with self.assertRaises(KeyError):
             access_nested_map(nested_map, path)
+
+
+class TestGetJson(unittest.TestCase):
+    """Class makes and tests Mock HTTP calls"""
+    @parameterized.expand([
+        ("http://example.com", {"payload": True}),
+        ("http://holberton.io", {"payload": False})
+    ])
+    def test_get_json(self, test_url: str, test_payload: dict) -> Any:
+        """test get_json()"""
+        with mock.patch("requests.get") as get_data:
+            res = mock.Mock()
+            res.json.return_value = test_payload
+            get_data.return_value = res
+            # url = get_json(test_url)
+            self.assertEqual(get_json(test_url), test_payload)
